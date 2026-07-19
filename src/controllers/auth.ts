@@ -5,8 +5,12 @@ import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "../secret.js";
 import { BadRequestException } from "../exceptions/bad-request.js";
 import { ErrorCode } from "../exceptions/root.js";
+import { SignupSchema } from "../schema/users.js";
+import { UnprocessablEntity } from "../exceptions/validation.js";
 
 export const signup = async (req: Request, res: Response, next: NextFunction) => {
+
+SignupSchema.parse(req.body); // Validate request body using SignupSchema 
   const {
     firstName,
     lastName,
@@ -26,7 +30,7 @@ export const signup = async (req: Request, res: Response, next: NextFunction) =>
   });
 
   if (existingUser) {
-   next(new BadRequestException("User already exists.", ErrorCode.USER_ALREADY_EXISTS));
+    throw new BadRequestException("User already exists.", ErrorCode.USER_ALREADY_EXISTS);
   }
 
   const hashedPassword = await hash(password, 10);
@@ -42,7 +46,7 @@ export const signup = async (req: Request, res: Response, next: NextFunction) =>
 
   const { password: _, ...safeUser } = user;
 
-  return res.status(201).json(safeUser);
+  return res.status(201).json(safeUser);   
 };
 
 

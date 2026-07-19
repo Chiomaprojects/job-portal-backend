@@ -4,6 +4,7 @@ import { PrismaClient } from "./generated/prisma/client.js";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { DATABASE_URL, PORT } from "./secret.js";
 import { errorMiddleware } from './middlewares/errors.js';
+import { SignupSchema } from './schema/users.js';
 
 
 const app: Express = express();
@@ -19,6 +20,17 @@ export const prismaClient = new PrismaClient({
   adapter,
   log: ['query'],
 });
+// }).$extends({
+//   query: { 
+//     user: {
+//       create({args, query}) {
+//         // Custom logic for user creation
+//         args.data = SignupSchema.parse(args.data); // Validate data using SignupSchema
+//         return query(args);
+//       } 
+//     }
+//   }
+//  });
 
 app.use(errorMiddleware);
 
