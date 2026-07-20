@@ -7,6 +7,7 @@ import { BadRequestException } from "../exceptions/bad-request.js";
 import { ErrorCode } from "../exceptions/root.js";
 import { SignupSchema } from "../schema/users.js";
 import { UnprocessablEntity } from "../exceptions/validation.js";
+import { NotFoundException } from "../exceptions/not-found.js";
 
 export const signup = async (req: Request, res: Response, next: NextFunction) => {
 
@@ -62,9 +63,7 @@ export const login = async (req: Request, res: Response) => {
   });
 
   if (!user) {
-    return res.status(404).json({
-      message: "Invalid email or password.",
-    });
+    throw new NotFoundException("User not found.", ErrorCode.USER_NOT_FOUND);
   }
 
   const isPasswordValid = await compare(
@@ -73,9 +72,7 @@ export const login = async (req: Request, res: Response) => {
 );
 
   if (!isPasswordValid) {
-    return res.status(401).json({
-      message: "Invalid email or password.",
-    });
+    throw new BadRequestException("Incorrect password.", ErrorCode.INCORRECT_PASSWORD);
   }
 
   const { password: _, ...safeUser } = user;
@@ -86,6 +83,11 @@ export const login = async (req: Request, res: Response) => {
 
 
   return res.status(200).json({ ...safeUser, token });
+};
+
+export const me = async (req: Request, res: Response) => {
+  
+  return res.json(req.user);
 };
 
   
