@@ -12,9 +12,17 @@ datasource db {
   provider = "postgresql"
 }
 
+enum EmploymentType {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+  INTERNSHIP
+}
+
 enum Role {
-ADMIN
-USER
+  ADMIN
+  EMPLOYER
+  APPLICANT
 }
  
 model User {
@@ -23,7 +31,7 @@ model User {
   lastName        String
   email           String   @unique
   password        String
-  role            Role     @default(USER)
+  role            Role     @default(APPLICANT)
   profileImage    String?
   phone           String?
   bio             String?
@@ -32,4 +40,19 @@ model User {
   
 
   @@map("users")
+}
+
+model Job {
+  id              Int      @id @default(autoincrement())
+
+  title           String
+  description     String
+  companyName     String
+  location        String
+  salary          Int?
+  employmentType  EmploymentType
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("jobs")
 }
